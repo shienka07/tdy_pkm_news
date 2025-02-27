@@ -48,6 +48,7 @@ enum SortType {
 class Monitoring {
     private final Logger logger;
     private final HttpClient client;
+    private final String OUTPUT_FOLDER = "news_data";
 
     public Monitoring() {
         logger = Logger.getLogger(Monitoring.class.getName());
@@ -58,6 +59,21 @@ class Monitoring {
         client = HttpClient.newBuilder()
                 .followRedirects(HttpClient.Redirect.NORMAL)
                 .build();
+
+        createOutputFolder();        
+    }
+
+    private void createOutputFolder() {
+        try {
+            Path folderPath = Paths.get(OUTPUT_FOLDER);
+            if (!Files.exists(folderPath)) {
+                Files.createDirectories(folderPath);
+                logger.info(OUTPUT_FOLDER + " 폴더 생성 완료");
+            }
+        } catch (Exception e) {
+            logger.severe("폴더 생성 실패: " + e.getMessage());
+            e.printStackTrace();
+        }
     }
 
     // 검색어를 통해서 최근 뉴스를 받아오고 슬랙에 전송
@@ -103,8 +119,9 @@ class Monitoring {
                     .build();
             String[] tmp2 = imageLink.split("\\.");
             String extension = tmp2[tmp2.length - 1].split("\\?")[0];
-            savedImagePath = "%d_%s.%s".formatted(timestamp, keyword, extension);
-            Path path = Path.of(savedImagePath);
+            String imgFilename = "%d_%s.%s".formatted(timestamp, keyword, extension);
+            savedImagePath = Paths.get(OUTPUT_FOLDER, imgFilename).toString();
+            Path path = Paths.get(savedImagePath);
 
             HttpResponse<Path> imageResponse2 = client.send(request,
                     HttpResponse.BodyHandlers.ofFile(path));
