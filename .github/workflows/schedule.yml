@@ -18,8 +18,8 @@ jobs:
     
           - name: 컴파일 및 코드 실행
             run: |
-              javac Solution06.java
-              java Solution06
+              javac App.java
+              java App
             env:
               KEYWORD: ${{ vars.KEYWORD }}
               NEWS_TITLE: ${{ vars.NEWS_TITLE }}
