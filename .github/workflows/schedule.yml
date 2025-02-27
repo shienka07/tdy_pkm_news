@@ -2,7 +2,7 @@ name: 뉴스 모니터링
 on:
     workflow_dispatch:  # 수동 실행 가능
     schedule:
-        - cron: "*/5 * * * *"  
+        - cron: "0 0 * * *"  # 매일 오전 9시에 실행
 jobs:
     news-monitoring:
         runs-on: ubuntu-latest
