@@ -14,7 +14,7 @@ import java.util.regex.Pattern;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class Solution06 {
+public class App {
     public static void main(String[] args) {
         Monitoring monitoring = new Monitoring();
         
