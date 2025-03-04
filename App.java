@@ -10,6 +10,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.regex.Pattern;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -50,6 +51,7 @@ class Monitoring {
     private final Logger logger;
     private final HttpClient client;
     private final String OUTPUT_FOLDER = "news_data"; // 결과 파일이 저장될 폴더 이름
+    private final Pattern HTML_TAG_PATTERN = Pattern.compile("<[^>]*>"); // HTML 태그 제거용 정규식
 
     public Monitoring() {
         logger = Logger.getLogger(Monitoring.class.getName());
@@ -63,6 +65,22 @@ class Monitoring {
                 
         // 결과 파일 저장 폴더 생성
         createOutputFolder();
+    }
+    
+    // HTML 태그 제거 메서드
+    private String removeHtmlTags(String text) {
+        if (text == null || text.isEmpty()) {
+            return text;
+        }
+        // HTML 태그 제거
+        String result = HTML_TAG_PATTERN.matcher(text).replaceAll("");
+        // HTML 엔티티 처리 (예: &quot;, &amp; 등)
+        result = result.replace("&quot;", "\"")
+                .replace("&amp;", "&")
+                .replace("&lt;", "<")
+                .replace("&gt;", ">")
+                .replace("&nbsp;", " ");
+        return result;
     }
     
     // 결과 파일을 저장할 폴더 생성
@@ -91,7 +109,8 @@ class Monitoring {
             String[] tmp = response.split("title\":\"");
             result = new String[display];
             for (int i = 1; i < tmp.length; i++) {
-                result[i - 1] = tmp[i].split("\",")[0];
+                // HTML 태그 제거하여 저장
+                result[i - 1] = removeHtmlTags(tmp[i].split("\",")[0]);
             }
             logger.info(Arrays.toString(result));
             
